@@ -356,6 +356,28 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+Log in using the superuser credentials and add the required:
+
+Products
+Denominations
+
+Example Product:
+
+Product ID: P001
+Name: Product A
+Stock: 10
+Unit Price: 100.00
+Tax Percentage: 18.00
+
+Example Denominations:
+500
+50
+20
+10
+5
+2
+1
+
 ### 8. Run Django
 
 ```bash
