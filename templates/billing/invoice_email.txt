@@ -1,0 +1,32 @@
+Bill Invoice
+
+Customer: {{ purchase.customer.email }}
+
+Purchase ID: {{ purchase.id }}
+
+Date: {{ purchase.created_at }}
+
+Products
+--------
+
+{% for item in purchase.items.all %}
+Product: {{ item.product_name }}
+Quantity: {{ item.quantity }}
+Unit Price: {{ item.unit_price }}
+Tax: {{ item.tax_percentage }}%
+Tax Amount: {{ item.tax_amount }}
+Total: {{ item.total_price }}
+
+{% endfor %}
+
+Payment Summary
+---------------
+
+Total Without Tax: {{ purchase.total_without_tax }}
+Total Tax: {{ purchase.total_tax }}
+Total Amount: {{ purchase.total_amount }}
+Rounded Amount: {{ purchase.rounded_amount }}
+Paid Amount: {{ purchase.paid_amount }}
+Balance / Change: {{ purchase.balance_amount }}
+
+Thank you for your purchase.

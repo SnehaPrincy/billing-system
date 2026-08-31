@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Previous Purchases</title>
+</head>
+
+<body>
+
+<h1>Previous Purchases</h1>
+
+<form method="get">
+
+    <label for="email">
+        Customer Email:
+    </label>
+
+    <input
+        type="email"
+        id="email"
+        name="email"
+        value="{{ customer_email }}"
+        required
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<hr>
+
+{% if customer_email %}
+
+    <h2>
+        Purchases for {{ customer_email }}
+    </h2>
+
+    {% if purchases %}
+
+        <table border="1" cellpadding="8">
+
+            <thead>
+                <tr>
+                    <th>Purchase ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for purchase in purchases %}
+
+                    <tr>
+
+                        <td>
+                            {{ purchase.id }}
+                        </td>
+
+                        <td>
+                            {{ purchase.created_at }}
+                        </td>
+
+                        <td>
+                            {{ purchase.total_amount }}
+                        </td>
+
+                        <td>
+                            <a
+                                href="{% url 'billing:purchase_detail' purchase.id %}"
+                            >
+                                View Details
+                            </a>
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p>
+            No previous purchases found for this customer.
+        </p>
+
+    {% endif %}
+
+{% endif %}
+
+<hr>
+
+<a href="{% url 'billing:billing' %}">
+    Create New Bill
+</a>
+
+</body>
+</html>

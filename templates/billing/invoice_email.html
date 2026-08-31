@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+</head>
+
+<body>
+
+    <h2>Bill Invoice</h2>
+
+    <p>
+        <strong>Customer:</strong>
+        {{ purchase.customer.email }}
+    </p>
+
+    <p>
+        <strong>Purchase ID:</strong>
+        {{ purchase.id }}
+    </p>
+
+    <p>
+        <strong>Date:</strong>
+        {{ purchase.created_at }}
+    </p>
+
+    <hr>
+
+    <h3>Products</h3>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Tax %</th>
+                <th>Tax Amount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in purchase.items.all %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.tax_percentage }}%</td>
+                <td>{{ item.tax_amount }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Total Without Tax</th>
+            <td>{{ purchase.total_without_tax }}</td>
+        </tr>
+
+        <tr>
+            <th>Total Tax</th>
+            <td>{{ purchase.total_tax }}</td>
+        </tr>
+
+        <tr>
+            <th>Total Amount</th>
+            <td>{{ purchase.total_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Rounded Amount</th>
+            <td>{{ purchase.rounded_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Paid Amount</th>
+            <td>{{ purchase.paid_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Balance / Change</th>
+            <td>
+                {{ purchase.balance_amount }}
+            </td>
+        </tr>
+    </table>
+
+    <p>Thank you for your purchase.</p>
+
+</body>
+</html>

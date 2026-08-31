@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Bill Invoice</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .bill-header {
+            margin-bottom: 30px;
+        }
+
+        .bill-header p {
+            margin: 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #999;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .totals {
+            width: 400px;
+            margin-left: auto;
+            margin-top: 25px;
+        }
+
+        .totals table {
+            width: 100%;
+        }
+
+        .total-row {
+            font-weight: bold;
+        }
+
+        .denominations {
+            margin-top: 30px;
+        }
+
+        .actions {
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 18px;
+            cursor: pointer;
+        }
+
+        @media print {
+            .actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Bill Invoice</h1>
+
+    <!-- ========================= -->
+    <!-- CUSTOMER INFORMATION -->
+    <!-- ========================= -->
+
+    <div class="bill-header">
+
+        <h2>Customer</h2>
+
+        <p>
+            <strong>Email:</strong>
+            {{ purchase.customer.email }}
+        </p>
+
+        <p>
+            <strong>Purchase ID:</strong>
+            {{ purchase.id }}
+        </p>
+
+        <p>
+            <strong>Date:</strong>
+            {{ purchase.created_at|date:"d M Y, H:i" }}
+        </p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PRODUCTS -->
+    <!-- ========================= -->
+
+    <h2>Products</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Tax %</th>
+                <th>Tax Amount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in purchase.items.all %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product.product_id }}
+                    </td>
+
+                    <td>
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+                    <td class="amount">
+                        {{ item.unit_price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.tax_percentage|floatformat:2 }}%
+                    </td>
+
+                    <td class="amount">
+                        {{ item.tax_amount|floatformat:2 }}
+                    </td>
+
+                    <td class="amount">
+                        {{ item.total_price|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="7">
+                        No products found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- ========================= -->
+    <!-- BILL TOTALS -->
+    <!-- ========================= -->
+
+    <div class="totals">
+
+        <table>
+
+            <tr>
+                <td>
+                    Total Without Tax
+                </td>
+
+                <td class="amount">
+                    {{ purchase.total_without_tax|floatformat:2 }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Total Tax
+                </td>
+
+                <td class="amount">
+                    {{ purchase.total_tax|floatformat:2 }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Total Amount
+                </td>
+
+                <td class="amount">
+                    {{ purchase.total_amount|floatformat:2 }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Rounded Amount
+                </td>
+
+                <td class="amount">
+                    {{ purchase.rounded_amount|floatformat:2 }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Paid Amount
+                </td>
+
+                <td class="amount">
+                    {{ purchase.paid_amount|floatformat:2 }}
+                </td>
+            </tr>
+
+            <tr class="total-row">
+                <td>
+                    Balance / Change
+                </td>
+
+                <td class="amount">
+                    {{ purchase.balance_amount|floatformat:2 }}
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- BALANCE DENOMINATIONS -->
+    <!-- ========================= -->
+
+    <div class="denominations">
+
+        <h2>Balance Denominations</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Denomination</th>
+                    <th>Available</th>
+                    <th>Dispensed</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for denomination in purchase.denominations.all %}
+
+                    <tr>
+
+                        <td>
+                            {{ denomination.denomination.value }}
+                        </td>
+
+                        <td>
+                            {{ denomination.available_count }}
+                        </td>
+
+                        <td>
+                            {{ denomination.dispensed_count }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="3">
+                            No denomination information available.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- ACTIONS -->
+    <!-- ========================= -->
+
+    <div class="actions">
+
+        <button
+            type="button"
+            onclick="window.print()"
+        >
+            Print Bill
+        </button>
+
+        <a href="{% url 'billing:billing' %}">
+            Create Another Bill
+        </a>
+
+    </div>
+
+</body>
+</html>

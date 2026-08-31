@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Details</title>
+</head>
+
+<body>
+
+<h1>Purchase Details</h1>
+
+<section>
+
+    <h2>Customer</h2>
+
+    <p>
+        <strong>Email:</strong>
+        {{ purchase.customer.email }}
+    </p>
+
+    <p>
+        <strong>Purchase ID:</strong>
+        {{ purchase.id }}
+    </p>
+
+    <p>
+        <strong>Date:</strong>
+        {{ purchase.created_at }}
+    </p>
+
+</section>
+
+<hr>
+
+<section>
+
+    <h2>Products</h2>
+
+    <table border="1" cellpadding="8">
+
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Tax %</th>
+                <th>Tax Amount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in purchase.items.all %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product.product_id }}
+                    </td>
+
+                    <td>
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+                    <td>
+                        {{ item.unit_price }}
+                    </td>
+
+                    <td>
+                        {{ item.tax_percentage }}%
+                    </td>
+
+                    <td>
+                        {{ item.tax_amount }}
+                    </td>
+
+                    <td>
+                        {{ item.total_price }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+<hr>
+
+<section>
+
+    <h2>Payment Summary</h2>
+
+    <table border="1" cellpadding="8">
+
+        <tr>
+            <th>Total Without Tax</th>
+            <td>{{ purchase.total_without_tax }}</td>
+        </tr>
+
+        <tr>
+            <th>Total Tax</th>
+            <td>{{ purchase.total_tax }}</td>
+        </tr>
+
+        <tr>
+            <th>Total Amount</th>
+            <td>{{ purchase.total_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Rounded Amount</th>
+            <td>{{ purchase.rounded_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Paid Amount</th>
+            <td>{{ purchase.paid_amount }}</td>
+        </tr>
+
+        <tr>
+            <th>Balance / Change</th>
+            <td>{{ purchase.balance_amount }}</td>
+        </tr>
+
+    </table>
+
+</section>
+
+<hr>
+
+<a href="{% url 'billing:customer_purchases' %}?email={{ purchase.customer.email }}">
+    Back to Previous Purchases
+</a>
+
+&nbsp;&nbsp;
+
+<a href="{% url 'billing:billing' %}">
+    Create New Bill
+</a>
+
+</body>
+</html>

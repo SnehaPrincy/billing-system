@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Bill</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .section {
+            margin-top: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #999;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .form-row label {
+            min-width: 100px;
+        }
+
+        .product-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .product-row select,
+        .product-row input {
+            padding: 6px;
+        }
+
+        .denomination-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .add-button {
+            margin-top: 10px;
+        }
+
+        .submit-section {
+            margin-top: 25px;
+        }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid;
+            border-radius: 4px;
+        }
+
+        .message.error {
+            color: #842029;
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+        }
+
+        .history-button {
+            display: inline-block;
+            padding: 10px 18px;
+            text-decoration: none;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: black;
+            background-color: #f2f2f2;
+        }
+
+        .history-button:hover {
+            background-color: #e5e5e5;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Billing Page</h1>
+
+<a href="{% url 'billing:customer_purchases' %}" class="history-button">
+    Purchase History
+</a>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- CUSTOMER SECTION -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <h2>Customer</h2>
+
+        {% if billing_form.non_field_errors %}
+            <div class="error">
+                {{ billing_form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-row">
+            {{ billing_form.customer_email.label_tag }}
+            {{ billing_form.customer_email }}
+
+            {% if billing_form.customer_email.errors %}
+                <div class="error">
+                    {{ billing_form.customer_email.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PRODUCTS SECTION -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <h2>Bill Section</h2>
+
+        {{ item_formset.management_form }}
+
+        {% if item_formset.non_form_errors %}
+            <div class="error">
+                {{ item_formset.non_form_errors }}
+            </div>
+        {% endif %}
+
+        <div id="product-forms">
+
+            {% for form in item_formset %}
+
+                <div class="product-row">
+
+                    {{ form.product.label_tag }}
+                    {{ form.product }}
+
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+
+                    {% if form.errors %}
+                        <div class="error">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Empty form used by JavaScript -->
+
+        <template id="empty-product-form">
+
+            <div class="product-row">
+
+                {{ item_formset.empty_form.product.label_tag }}
+                {{ item_formset.empty_form.product }}
+
+                {{ item_formset.empty_form.quantity.label_tag }}
+                {{ item_formset.empty_form.quantity }}
+
+            </div>
+
+        </template>
+
+
+        <button
+            type="button"
+            id="add-product"
+            class="add-button"
+        >
+            Add New
+        </button>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- DENOMINATION SECTION -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <h2>Denominations</h2>
+
+        {{ denomination_formset.management_form }}
+
+        {% if denomination_formset.non_form_errors %}
+            <div class="error">
+                {{ denomination_formset.non_form_errors }}
+            </div>
+        {% endif %}
+
+        {% for form in denomination_formset %}
+
+            <div class="denomination-row">
+
+                {{ form.denomination.label_tag }}
+                {{ form.denomination }}
+
+                {{ form.available_count.label_tag }}
+                {{ form.available_count }}
+
+                {% if form.errors %}
+                    <div class="error">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PAYMENT SECTION -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <h2>Payment</h2>
+
+        <div class="form-row">
+
+            {{ billing_form.paid_amount.label_tag }}
+            {{ billing_form.paid_amount }}
+
+            {% if billing_form.paid_amount.errors %}
+                <div class="error">
+                    {{ billing_form.paid_amount.errors }}
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- ACTIONS -->
+    <!-- ========================= -->
+
+    <div class="submit-section">
+
+        <button type="submit">
+            Generate Bill
+        </button>
+
+        
+
+    </div>
+
+</form>
+
+
+<!-- ========================= -->
+<!-- DYNAMIC FORMSET JAVASCRIPT -->
+<!-- ========================= -->
+
+<script>
+
+    const addProductButton = document.getElementById("add-product");
+
+    const productFormsContainer = document.getElementById("product-forms");
+
+    const totalFormsInput = document.getElementById(
+        "id_items-TOTAL_FORMS"
+    );
+
+    const emptyProductTemplate = document.getElementById(
+        "empty-product-form"
+    );
+
+
+    addProductButton.addEventListener("click", function () {
+
+        // Current number of forms
+        const formIndex = parseInt(
+            totalFormsInput.value,
+            10
+        );
+
+        // Get empty form HTML
+        let newFormHtml =
+            emptyProductTemplate.innerHTML;
+
+        // Replace Django's __prefix__
+        // with the next form index
+        newFormHtml = newFormHtml.replace(
+            /__prefix__/g,
+            formIndex
+        );
+
+        // Add new form
+        productFormsContainer.insertAdjacentHTML(
+            "beforeend",
+            newFormHtml
+        );
+
+        // Tell Django that another form exists
+        totalFormsInput.value = formIndex + 1;
+
+    });
+
+</script>
+
+</body>
+</html>
