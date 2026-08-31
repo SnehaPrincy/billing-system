@@ -399,20 +399,6 @@ DEFAULT_FROM_EMAIL=your_email@gmail.com
 
 After configuring SMTP, invoice emails can be processed by the Django-Q2 worker and delivered to the customer's email address.
 
-## Running Tests
-
-Run the Django test suite with:
-
-```bash
-python manage.py test
-```
-
-Verify the Django project configuration with:
-
-```bash
-python manage.py check
-```
-
 ## Security
 
 Sensitive credentials should never be committed to the repository.
